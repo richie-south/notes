@@ -1,0 +1,21 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "npx micro-dev"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "async": "^2.6.1",
+    "isomorphic-fetch": "^2.2.1",
+    "micro": "^9.3.2"
+  },
+  "devDependencies": {
+    "micro-dev": "^3.0.0"
+  }
+}
