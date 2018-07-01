@@ -16,8 +16,8 @@ ESP8266WebServer server(80);
 String webPage;
 boolean hasPrintedFirstLine = false;
 
-const char* ssid     = "";
-const char* password = "";
+const char* ssid     = "bergenrot";
+const char* password = "IzabellaRichardHarry";
 
 void setup() {
   webPage += "<h1 style=\"text-align: center;font-size: 64px;font-family: arial;color: #263238;\">notes</h1>";
