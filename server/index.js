@@ -1,6 +1,48 @@
 const {json} = require('micro')
 const fetch = require('isomorphic-fetch')
 const _async = require("async")
+const CronJob = require('cron').CronJob
+
+// real '0 0 5 * * *'
+/* new CronJob('* * * * * *', function() {
+  console.log('hello')
+
+}, null, true, 'Europe/Stockholm')
+ */
+function printWeather() {
+  _async.waterfall([
+    function (callback) {
+      printTitle('Weather')
+        .then(() => callback(null, 'done')) 
+    },
+    function (_, callback) {
+      printLine('hello')
+      .then(() => callback(null, 'done'))
+    },
+    function (_, callback) {
+      printLine('bajs')
+        .then(() => callback(null, 'done'))
+    }
+  ], () => {
+    console.log('kingen')
+  })
+}
+
+function printTitle (title) {
+  return fetch(`http://192.168.1.237/print/title?title=${title}`)
+    .catch((error) => {
+      console.log('error', error)
+    })
+}
+
+function printLine (line) {
+  return fetch(`http://192.168.1.237/print/line?text=${line}`)
+    .catch((error) => {
+      console.log('error', error)
+    })
+}
+
+printWeather()
 
 /*str
   .split('[')
@@ -31,7 +73,7 @@ const _async = require("async")
       callback()
     })
 }) */
-
+/*
 module.exports = async (req, res) => {
   //const {tasks} = await json(req)
 
@@ -39,3 +81,4 @@ module.exports = async (req, res) => {
   res.end()
 }
 
+ */
