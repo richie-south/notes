@@ -4,6 +4,13 @@
 #include <ESP8266mDNS.h>
 #include "Adafruit_Thermal.h"
 #include "SoftwareSerial.h"
+
+#include "sun.h"
+#include "rain.h"
+#include "sunClouds.h"
+#include "lightning.h"
+#include "clouds.h"
+
 #define TX_PIN 12
 #define RX_PIN 14
 
@@ -13,14 +20,12 @@ Adafruit_Thermal printer(&mySerial);
 MDNSResponder mdns;
 
 ESP8266WebServer server(80);
-String webPage;
 boolean hasPrintedFirstLine = false;
 
-const char* ssid     = "";
-const char* password = "";
+const char* ssid     = "bergenrot";
+const char* password = "IzabellaRichardHarry";
 
 void setup() {
-  webPage += "<h1 style=\"text-align: center;font-size: 64px;font-family: arial;color: #263238;\">notes</h1>";
 
   mySerial.begin(9600);
   printer.begin();
@@ -49,18 +54,88 @@ void setup() {
     Serial.println("MDNS responder started");
 
   server.on("/", [](){
-    server.send(200, "text/html", webPage);
+    server.send(200, "text/html", "<p>ok</p>");
   });
-  server.on("/print", [](){
+  server.on("/print/task-item", [](){
     String task = server.arg("task");
     printer.begin();
     buildTaskString(task);
-    server.send(200, "text/html", webPage + "<p style=\"text-align: center;font-size: 16px;font-family: arial;color: #263238;\">" + task + "</p>");
-    delay(1000);
+    server.send(200, "text/html", "<p>ok</p>");
+  });
+
+  server.on("/print/title", [](){
+    String title = server.arg("title");
+    printer.begin();
+    printTitle(title);
+    server.send(200, "text/html", "<p>ok</p>");
+  });
+
+  server.on("/print/line", [](){
+    String text = server.arg("text");
+    printer.begin();
+    printLine(text);
+    server.send(200, "text/html", "<p>ok</p>");
+  });
+
+  server.on("/print/feed", [](){
+    String title = server.arg("amount");
+    printer.begin();
+    feed(title.toInt());
+    server.send(200, "text/html", "<p>ok</p>");
+  });
+
+  server.on("/print/weather", [](){
+    String type = server.arg("type");
+    printer.wake();
+    printer.begin();
+    printer.setDefault();
+    printWeather(type);
+    server.send(200, "text/html", "<p>ok</p>");
+    printer.sleep();
   });
 
   server.begin();
   Serial.println("HTTP server started");
+}
+
+void printWeather (String type) {
+  if (type == "rain") {
+    printer.printBitmap(200, 200, rain_data);
+  }
+
+  if (type == "sun") {
+    printer.printBitmap(75, 75, sun_data);
+  }
+
+  if (type == "lightning") {
+    printer.printBitmap(75, 75, lightning_data);
+  }
+
+  if (type == "sunClouds") {
+    printer.printBitmap(75, 75, sunClouds_data);
+  }
+
+  if (type == "clouds") {
+    printer.printBitmap(75, 75, clouds_data);
+  }
+}
+
+void feed (int feedValue) {
+  printer.feed(feedValue);
+}
+
+void printLine (String text) {
+  printer.println(text);
+  printer.setDefault();
+}
+
+void printTitle (String text) {
+  printer.boldOn();
+  printer.underlineOn();
+  printer.setSize('L');
+  printer.println(text);
+  printer.feed(1);
+  printer.setDefault();
 }
 
 void buildTaskString (String task) {
